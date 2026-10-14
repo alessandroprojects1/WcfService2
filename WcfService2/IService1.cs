@@ -33,14 +33,38 @@ namespace WcfService2
 
 
         [OperationContract]
-        List<Productos> ListarProductoDB(int numero);
+        List<Productos> ListarProductoDB();
+
 
         [OperationContract]
         List<Categorias> ListarCategoriasDB();
+
+
+        [OperationContract]
+        Productos buscarProductoId(int id);
+
+        [OperationContract]
+        void insertarProducto(Productos producto);
+
+
+        [OperationContract]
+        void ActualizarProducto(Productos producto);
+
+
+        [OperationContract]
+        string EliminarProducto(int id);
+
+
+        [OperationContract]
+        List<Productos> ListarProductoSP();
+
+
+        [OperationContract]
+        void insertarProductoSP(String nombre, decimal precio);
+
+
+        [OperationContract]
+        bool EliminarProductosSP(int id);
     }
-
-
-   
-   
     
 }

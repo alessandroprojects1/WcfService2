@@ -12,6 +12,8 @@ namespace WcfService2
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class TiendaDBEntities : DbContext
     {
@@ -27,5 +29,32 @@ namespace WcfService2
     
         public virtual DbSet<Productos> Productos { get; set; }
         public virtual DbSet<Categorias> Categorias { get; set; }
+    
+        public virtual int sp_InsertarProducto(string nombre, Nullable<decimal> precio)
+        {
+            var nombreParameter = nombre != null ?
+                new ObjectParameter("Nombre", nombre) :
+                new ObjectParameter("Nombre", typeof(string));
+    
+            var precioParameter = precio.HasValue ?
+                new ObjectParameter("Precio", precio) :
+                new ObjectParameter("Precio", typeof(decimal));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_InsertarProducto", nombreParameter, precioParameter);
+        }
+    
+        public virtual ObjectResult<sp_ListarProductos_Result> sp_ListarProductos()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_ListarProductos_Result>("sp_ListarProductos");
+        }
+    
+        public virtual int sp_EliminarProducto(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_EliminarProducto", idParameter);
+        }
     }
 }

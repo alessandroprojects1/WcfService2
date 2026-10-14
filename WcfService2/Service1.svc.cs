@@ -60,14 +60,14 @@ namespace WcfService2
             }
         }
 
-        public List<Productos> ListarProductoDB(int numero)
+        public List<Productos> ListarProductoDB()
         {
             using (var db = new TiendaDBEntities())
             {
 
                 //select * from Productos where id = 1
 
-                var productos = db.Productos.Where(x => x.Id == numero).ToList();
+                var productos = db.Productos.ToList();
 
                 //var productos = db.Productos.OrderByDescending(p => p.Nombre).ToList();
 
@@ -85,6 +85,106 @@ namespace WcfService2
                 return categorias;
             }
 
+        }
+
+        public Productos buscarProductoId(int id)
+        {
+            using( var db = new TiendaDBEntities())
+            {
+                var producto = db.Productos.FirstOrDefault(p => p.Id == id);
+
+                return producto;
+
+            }
+        }
+
+        public void insertarProducto(Productos producto)
+        {
+            using (TiendaDBEntities bd = new TiendaDBEntities())
+            {
+                bd.Productos.Add(producto);
+                bd.SaveChanges();
+            }
+        }
+
+        public void ActualizarProducto(Productos producto)
+        {
+            using (TiendaDBEntities bd = new TiendaDBEntities())
+            {
+
+                Productos ProductoDB = bd.Productos.FirstOrDefault(p => p.Id == producto.Id);
+
+                if(ProductoDB != null)
+                {
+                    ProductoDB.Nombre = producto.Nombre;
+                    ProductoDB.Precio = producto.Precio;
+                    
+                    bd.SaveChanges();
+                }
+
+            }
+
+        }
+
+        public string EliminarProducto(int id)
+        {
+
+            using (TiendaDBEntities bd = new TiendaDBEntities()) {
+
+                Productos ProductoDB = bd.Productos.FirstOrDefault(p => p.Id == id);
+
+                if (ProductoDB != null)
+                {
+                    bd.Productos.Remove(ProductoDB);
+                    bd.SaveChanges() ;
+
+                    return "Se eliminó el producto solicitado";
+                }
+                else
+                {
+                    return "No se encontró el producto con el ID: " + id;
+                }
+
+            }
+
+        }
+        
+        public  List<Productos> ListarProductoSP()
+        {
+            using (var db = new TiendaDBEntities())
+            {
+                var productosSP = db.sp_ListarProductos().ToList();
+
+              var productos =   productosSP.Select(p => new Productos
+                {
+                    Id = p.Id,
+                    Nombre = p.Nombre,
+                    Precio = p.Precio
+                }).ToList();
+
+                return productos;
+            }
+        }
+
+
+        public void insertarProductoSP(String nombre, decimal precio)
+        {
+            using (var db = new TiendaDBEntities())
+            {
+                db.sp_InsertarProducto(nombre, precio);
+            }
+            
+        }
+
+        public bool EliminarProductosSP(int id)
+        {
+            using (var db = new TiendaDBEntities())
+            {
+                int resultado = db.sp_EliminarProducto(id);
+
+                return resultado>0;
+               
+            }
         }
     }
 }

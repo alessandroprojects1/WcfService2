@@ -20,6 +20,14 @@
           <Property Name="Nombre" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="Precio" Type="decimal" Precision="10" Scale="2" Nullable="false" />
         </EntityType>
+        <Function Name="sp_EliminarProducto" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_InsertarProducto" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Nombre" Type="varchar" Mode="In" />
+          <Parameter Name="Precio" Type="decimal" Mode="In" />
+        </Function>
+        <Function Name="sp_ListarProductos" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <EntityContainer Name="TiendaDBModelStoreContainer">
           <EntitySet Name="Categorias" EntityType="Self.Categorias" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Productos" EntityType="Self.Productos" Schema="dbo" store:Type="Tables" />
@@ -39,6 +47,14 @@
         <EntityContainer Name="TiendaDBEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Productos" EntityType="Self.Productos" />
           <EntitySet Name="Categorias" EntityType="TiendaDBModel.Categorias" />
+          <FunctionImport Name="sp_InsertarProducto">
+            <Parameter Name="Nombre" Mode="In" Type="String" />
+            <Parameter Name="Precio" Mode="In" Type="Decimal" />
+          </FunctionImport>
+          <FunctionImport Name="sp_ListarProductos" ReturnType="Collection(TiendaDBModel.sp_ListarProductos_Result)" />
+          <FunctionImport Name="sp_EliminarProducto">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
         <EntityType Name="Categorias">
           <Key>
@@ -47,6 +63,11 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Nombre" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
         </EntityType>
+        <ComplexType Name="sp_ListarProductos_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="Nombre" Nullable="false" MaxLength="100" />
+          <Property Type="Decimal" Name="Precio" Nullable="false" Precision="10" Scale="2" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -70,6 +91,17 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_InsertarProducto" FunctionName="TiendaDBModel.Store.sp_InsertarProducto" />
+          <FunctionImportMapping FunctionImportName="sp_ListarProductos" FunctionName="TiendaDBModel.Store.sp_ListarProductos">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="TiendaDBModel.sp_ListarProductos_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="Precio" ColumnName="Precio" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_EliminarProducto" FunctionName="TiendaDBModel.Store.sp_EliminarProducto" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
